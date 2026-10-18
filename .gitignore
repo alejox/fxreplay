@@ -25,3 +25,10 @@ dist-ssr
 
 .vercel
 public/data/
+
+# Environment variables
+.env*
+!.env.example
+
+# Supabase CLI
+supabase/.temp/
