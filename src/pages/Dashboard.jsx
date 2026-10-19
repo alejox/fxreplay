@@ -5,7 +5,7 @@ import {
   Minus, MousePointer2, RectangleHorizontal,
   GitBranch, Undo2, Trash2, Loader2, Rewind, Spline,
   ArrowBigLeftDash, ArrowBigRightDash, AlertTriangle, Clock, Plus, Magnet, ArrowLeftRight,
-  TrendingUp, TrendingDown, Activity, Maximize2, Minimize2,
+  TrendingUp, TrendingDown, Activity, Maximize2, Minimize2, Waves,
 } from 'lucide-react';
 import TradingChart from '../components/TradingChart';
 import Sidebar from '../components/Sidebar';
@@ -16,6 +16,7 @@ import MetricsSummary from '../components/MetricsSummary';
 import FiboSettings from '../components/FiboSettings';
 import SessionsSettings from '../components/SessionsSettings';
 import MovingAverageSettings from '../components/MovingAverageSettings';
+import BollingerSettings, { loadBBConfig } from '../components/BollingerSettings';
 import RSISettings from '../components/RSISettings';
 import StochasticSettings from '../components/StochasticSettings';
 import { useBacktest } from '../hooks/useBacktest';
@@ -130,6 +131,10 @@ function Dashboard() {
     stochVisible,
     setStochVisible,
   } = useDrawingState();
+
+  const [bbConfig, setBBConfig] = useState(loadBBConfig);
+  const [bbVisible, setBBVisible] = useState(false);
+  const [showBBSettings, setShowBBSettings] = useState(false);
 
   const [theaterMode, setTheaterMode] = useState(false);
   const [slPrice, setSlPrice] = useState('');
@@ -788,6 +793,25 @@ function Dashboard() {
                 </div>
                 <div style={{ position: 'relative' }}>
                   <button
+                    onClick={(e) => { if (e.detail >= 2) return; setBBVisible(v => !v); }}
+                    onDoubleClick={() => setShowBBSettings(true)}
+                    className={`control-btn ${bbVisible ? 'active' : ''}`}
+                    title="Clic: Bandas de Bollinger (Mostrar/Ocultar) | Doble Clic: Configurar"
+                  >
+                    <Waves size={16} />
+                  </button>
+                  {showBBSettings && (
+                    <div style={{ position: 'absolute', left: '100%', top: 0, marginLeft: '8px', zIndex: 1000 }}>
+                      <BollingerSettings
+                        config={bbConfig}
+                        onChange={(cfg) => { setBBConfig(cfg); setBBVisible(!!cfg?.period); }}
+                        onClose={() => setShowBBSettings(false)}
+                      />
+                    </div>
+                  )}
+                </div>
+                <div style={{ position: 'relative' }}>
+                  <button
                     onClick={(e) => { if (e.detail >= 2) return; setRSIVisible(v => !v); }}
                     onDoubleClick={() => setShowRSISettings(true)}
                     className={`control-btn ${rsiVisible ? 'active' : ''}`}
@@ -921,6 +945,7 @@ function Dashboard() {
                   crosshairMode={crosshairMode}
                   crosshairVisible={crosshairVisible}
                   maConfig={maVisible ? maConfig : []}
+                  bbConfig={bbVisible ? bbConfig : null}
                   rsiConfig={rsiConfig}
                   rsiVisible={rsiVisible}
                   stochConfig={stochConfig}

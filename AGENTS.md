@@ -45,3 +45,11 @@
 - Default: period 14, overbought 70, oversold 30
 - Props: `rsiConfig={rsiConfig}` and `rsiVisible={rsiVisible}` passed to `TradingChart`
 - Button uses `TrendingDown` icon, click to toggle, double-click to configure
+
+## Bollinger Bands
+- Component: `src/components/BollingerSettings.jsx`
+- Config loaded/saved to localStorage (`fxreplay_bb_config`)
+- Default: period 20, stdDev 2 (population std deviation of close), middle `#facc15`, outer bands `#22d3ee` (dashed)
+- State lives in `src/pages/Dashboard.jsx` (`bbConfig`, `bbVisible`, hidden by default, visibility not persisted)
+- Props: `bbConfig={bbVisible ? bbConfig : null}` passed to `TradingChart` (3 line series on the price pane)
+- Button uses `Waves` icon, click to toggle, double-click to configure

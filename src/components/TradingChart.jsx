@@ -1,6 +1,7 @@
 import React, { useEffect, useRef, forwardRef, useImperativeHandle } from 'react';
 import { createChart, CandlestickSeries, LineSeries, HistogramSeries } from 'lightweight-charts';
 import { calculateSMA, calculateEMA } from './MovingAverageSettings';
+import { calculateBollinger } from './BollingerSettings';
 import { calculateRSI } from './RSISettings';
 import { calculateStochastic } from './StochasticSettings';
 
@@ -1056,6 +1057,7 @@ const TradingChart = forwardRef(({
   crosshairMode = 0,
   crosshairVisible = true,
   maConfig = [],
+  bbConfig = null,
   rsiConfig = null,
   rsiVisible = false,
   stochConfig = null,
@@ -1088,6 +1090,8 @@ const TradingChart = forwardRef(({
   const crosshairVisibleRef = useRef(crosshairVisible);
   const maConfigRef = useRef(maConfig);
   const maSeriesRefs = useRef([]);
+  const bbConfigRef = useRef(bbConfig);
+  const bbSeriesRefs = useRef([]);
   const rsiConfigRef = useRef(rsiConfig);
   const rsiPaneRef = useRef(null);
   const rsiVisibleRef = useRef(rsiVisible);
@@ -1125,6 +1129,7 @@ const TradingChart = forwardRef(({
   useEffect(() => { onSelectionChangeRef.current = onSelectionChange; }, [onSelectionChange]);
   useEffect(() => { fiboLevelsRef.current = fiboLevels; }, [fiboLevels]);
   useEffect(() => { maConfigRef.current = maConfig; }, [maConfig]);
+  useEffect(() => { bbConfigRef.current = bbConfig; }, [bbConfig]);
   useEffect(() => { rsiConfigRef.current = rsiConfig; }, [rsiConfig]);
   useEffect(() => { rsiVisibleRef.current = rsiVisible; }, [rsiVisible]);
   useEffect(() => { stochConfigRef.current = stochConfig; }, [stochConfig]);
@@ -1173,6 +1178,34 @@ const TradingChart = forwardRef(({
       maSeriesRefs.current.push(lineSeries);
     });
   }, [maConfig, data]);
+
+  useEffect(() => {
+    const chart = chartRef.current;
+    if (!chart || !data || data.length === 0) return;
+    bbSeriesRefs.current.forEach(ref => {
+      try { chart.removeSeries(ref); } catch { /* series already removed */ }
+    });
+    bbSeriesRefs.current = [];
+    if (!bbConfig || !bbConfig.period) return;
+    const bands = calculateBollinger(data, bbConfig.period, bbConfig.stdDev);
+    if (bands.middle.length === 0) return;
+    [
+      { points: bands.upper, color: bbConfig.bandColor, lineStyle: 2 },
+      { points: bands.middle, color: bbConfig.middleColor, lineStyle: 0 },
+      { points: bands.lower, color: bbConfig.bandColor, lineStyle: 2 },
+    ].forEach(band => {
+      const lineSeries = chart.addSeries(LineSeries, {
+        color: band.color,
+        lineWidth: bbConfig.lineWidth || 1,
+        lineStyle: band.lineStyle,
+        priceLineVisible: false,
+        crosshairMarkerVisible: false,
+        lastValueVisible: false,
+      });
+      lineSeries.setData(band.points);
+      bbSeriesRefs.current.push(lineSeries);
+    });
+  }, [bbConfig, data]);
 
   useEffect(() => {
     const chart = chartRef.current;
@@ -1674,6 +1707,36 @@ const TradingChart = forwardRef(({
       maSeriesRefs.current = maSeriesRefsArr;
     };
     updateMovingAverages(maConfigRef.current, chart);
+
+    // --- Bollinger Bands ---
+    const bbSeriesRefsArr = [];
+    const updateBollinger = (config, chartInstance) => {
+      bbSeriesRefsArr.forEach(ref => {
+        try { chartInstance.removeSeries(ref); } catch { /* series already removed */ }
+      });
+      bbSeriesRefsArr.length = 0;
+      if (!config || !config.period || !dataRef.current || dataRef.current.length === 0) return;
+      const bands = calculateBollinger(dataRef.current, config.period, config.stdDev);
+      if (bands.middle.length === 0) return;
+      [
+        { points: bands.upper, color: config.bandColor, lineStyle: 2 },
+        { points: bands.middle, color: config.middleColor, lineStyle: 0 },
+        { points: bands.lower, color: config.bandColor, lineStyle: 2 },
+      ].forEach(band => {
+        const lineSeries = chartInstance.addSeries(LineSeries, {
+          color: band.color,
+          lineWidth: config.lineWidth || 1,
+          lineStyle: band.lineStyle,
+          priceLineVisible: false,
+          crosshairMarkerVisible: false,
+          lastValueVisible: false,
+        });
+        lineSeries.setData(band.points);
+        bbSeriesRefsArr.push(lineSeries);
+      });
+      bbSeriesRefs.current = bbSeriesRefsArr;
+    };
+    updateBollinger(bbConfigRef.current, chart);
     const cleanupMA = () => {
       maSeriesRefsArr.forEach(ref => {
         try { chart.removeSeries(ref); } catch {}
