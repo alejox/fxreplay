@@ -906,7 +906,7 @@ function Dashboard() {
                   data={visibleData}
                   drawingMode={drawingMode}
                   activePosition={activePosition}
-                  focusIndex={absoluteIndex}
+                  focusIndex={selectingStart && !replayActive ? replayStartInput : absoluteIndex}
                   priceDecimals={symbolInfo?.decimals || 5}
                   minMove={symbolInfo?.minMove || 0.00001}
                   pipMultiplier={symbolInfo?.pipMult || 10000}
