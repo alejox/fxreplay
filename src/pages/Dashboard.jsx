@@ -936,6 +936,42 @@ function Dashboard() {
                   </div>
                 )}
               </div>
+            </div>
+
+            {selectingStart && !replayActive && (
+              <div className="replay-start-bar flex-wrap">
+                {isLoadingMore ? (
+                  <>
+                    <Loader2 size={14} className="animate-spin text-blue-400" />
+                    <span className="text-[11px] font-semibold text-slate-300">Cargando datos completos para replay...</span>
+                  </>
+                ) : (
+                  <>
+                    <div className="flex items-center gap-2 md:mr-4 shrink-0">
+                      <Rewind size={14} className="text-blue-400 hidden sm:block" />
+                      <span className="text-[10px] md:text-[11px] font-semibold text-slate-300 whitespace-nowrap">Punto de inicio:</span>
+                    </div>
+                    <input
+                      type="range"
+                      min="0"
+                      max={Math.max((chartData?.length || 1) - 1, 0)}
+                      value={Math.min(replayStartInput, (chartData?.length || 1) - 1)}
+                      onChange={(e) => setReplayStartInput(Number.parseInt(e.target.value, 10))}
+                      className="timeline-slider flex-1 min-w-[150px]"
+                    />
+                    <span className="text-[10px] font-mono text-slate-400 min-w-[70px] md:min-w-[90px] text-center shrink-0">
+                      {replayStartInput.toLocaleString()} / {(chartData?.length || 0).toLocaleString()}
+                    </span>
+                    <button
+                      onClick={handleEnterReplay}
+                      className="md:ml-2 px-3 md:px-4 py-1.5 bg-blue-600 hover:bg-blue-500 text-white text-[10px] md:text-[11px] font-bold rounded-lg transition-all whitespace-nowrap shrink-0"
+                    >
+                      GO
+                    </button>
+                  </>
+                )}
+              </div>
+            )}
 
             {replayActive && (
               <div className="replay-start-bar flex-wrap">
@@ -1014,7 +1050,6 @@ function Dashboard() {
                 </div>
               </div>
             )}
-            </div>
           </section>
 
           {/* Right Sidebar */}
