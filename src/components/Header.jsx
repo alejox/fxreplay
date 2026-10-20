@@ -8,6 +8,13 @@ const SYMBOLS = [
   { id: 'usdjpy', label: 'USD/JPY' },
   { id: 'us100',  label: 'US100' },
   { id: 'xauusd', label: 'XAU/USD' },
+  { id: 'googl',  label: 'GOOGL' },
+  { id: 'aapl',   label: 'AAPL' },
+  { id: 'msft',   label: 'MSFT' },
+  { id: 'nvda',   label: 'NVDA' },
+  { id: 'amzn',   label: 'AMZN' },
+  { id: 'tsla',   label: 'TSLA' },
+  { id: 'now',    label: 'NOW' },
 ];
 
 const TIMEFRAMES = ['M1', 'M5', 'M15', 'M30', 'H1', 'H4', 'D1', 'W1'];

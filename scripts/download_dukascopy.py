@@ -24,6 +24,14 @@ SYMBOLS = {
     # Dukascopy NASDAQ-100 future-like instrument used as US100 proxy.
     "us100": {"duka": "E_NQ-100", "decimals": 2},
     "xauusd": {"duka": "XAU/USD", "decimals": 2},
+    # US stock CFDs.
+    "googl": {"duka": "GOOGL.US/USD", "decimals": 2},
+    "aapl": {"duka": "AAPL.US/USD", "decimals": 2},
+    "now": {"duka": "NOW.US/USD", "decimals": 2},
+    "msft": {"duka": "MSFT.US/USD", "decimals": 2},
+    "nvda": {"duka": "NVDA.US/USD", "decimals": 2},
+    "amzn": {"duka": "AMZN.US/USD", "decimals": 2},
+    "tsla": {"duka": "TSLA.US/USD", "decimals": 2},
 }
 
 SYMBOL_ALIASES = {

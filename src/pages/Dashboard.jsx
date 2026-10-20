@@ -34,6 +34,13 @@ const SYMBOLS = [
   { id: 'usdjpy', label: 'USD/JPY', decimals: 3, pipMult: 100,   minMove: 0.001,   pipValue: 7,  defaultSL: 0.3,   defaultTP: 0.6 },
   { id: 'us100',  label: 'US100',   decimals: 2, pipMult: 1,     minMove: 0.01,    pipValue: 1,  defaultSL: 50,      defaultTP: 100 },
   { id: 'xauusd', label: 'XAU/USD', decimals: 2, pipMult: 10,    minMove: 0.01,    pipValue: 10, defaultSL: 3,       defaultTP: 6 },
+  { id: 'googl',  label: 'GOOGL',   decimals: 2, pipMult: 1,     minMove: 0.01,    pipValue: 1,  defaultSL: 3,       defaultTP: 6 },
+  { id: 'aapl',   label: 'AAPL',    decimals: 2, pipMult: 1,     minMove: 0.01,    pipValue: 1,  defaultSL: 3,       defaultTP: 6 },
+  { id: 'msft',   label: 'MSFT',    decimals: 2, pipMult: 1,     minMove: 0.01,    pipValue: 1,  defaultSL: 3,       defaultTP: 6 },
+  { id: 'nvda',   label: 'NVDA',    decimals: 2, pipMult: 1,     minMove: 0.01,    pipValue: 1,  defaultSL: 3,       defaultTP: 6 },
+  { id: 'amzn',   label: 'AMZN',    decimals: 2, pipMult: 1,     minMove: 0.01,    pipValue: 1,  defaultSL: 3,       defaultTP: 6 },
+  { id: 'tsla',   label: 'TSLA',    decimals: 2, pipMult: 1,     minMove: 0.01,    pipValue: 1,  defaultSL: 3,       defaultTP: 6 },
+  { id: 'now',    label: 'NOW',     decimals: 2, pipMult: 1,     minMove: 0.01,    pipValue: 1,  defaultSL: 3,       defaultTP: 6 },
 ];
 
 const TF_SL_SCALE = {
