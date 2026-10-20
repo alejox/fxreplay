@@ -1,9 +1,28 @@
 import React, { useEffect, useRef, forwardRef, useImperativeHandle } from 'react';
 import { createChart, CandlestickSeries, LineSeries, HistogramSeries } from 'lightweight-charts';
 import { calculateSMA, calculateEMA } from './MovingAverageSettings';
-import { calculateBollinger } from './BollingerSettings';
+import { calculateBollinger, calculateBollingerPercentB } from './BollingerSettings';
 import { calculateRSI } from './RSISettings';
 import { calculateStochastic } from './StochasticSettings';
+
+// Bollinger %B lives in its own pane below the price chart; empty panes are removed automatically
+const BBPCT_PANE_INDEX = 1;
+function addBBPctSeries(chart, data, config) {
+  const pctData = calculateBollingerPercentB(data, config.period, config.stdDev);
+  if (pctData.length === 0) return null;
+  const series = chart.addSeries(LineSeries, {
+    color: config.color || '#ec4899',
+    lineWidth: config.lineWidth || 2,
+    priceLineVisible: false,
+    lastValueVisible: true,
+  }, BBPCT_PANE_INDEX);
+  series.setData(pctData);
+  [config.upper ?? 1, config.lower ?? 0].forEach(level => {
+    series.createPriceLine({ price: level, color: '#64748b', lineWidth: 1, lineStyle: 2, axisLabelVisible: true });
+  });
+  series.getPane().setStretchFactor(0.25);
+  return series;
+}
 
 function hexToFill(hex, alpha = 0.08) {
   const r = Number.parseInt(hex.slice(1, 3), 16);
@@ -1062,6 +1081,8 @@ const TradingChart = forwardRef(({
   rsiVisible = false,
   stochConfig = null,
   stochVisible = false,
+  bbPctConfig = null,
+  bbPctVisible = false,
   onDrawingComplete,
   onSelectionChange,
 }, ref) => {
@@ -1098,6 +1119,9 @@ const TradingChart = forwardRef(({
   const stochConfigRef = useRef(stochConfig);
   const stochPaneRef = useRef(null);
   const stochVisibleRef = useRef(stochVisible);
+  const bbPctConfigRef = useRef(bbPctConfig);
+  const bbPctPaneRef = useRef(null);
+  const bbPctVisibleRef = useRef(bbPctVisible);
 
   const drawingsRef = useRef([]);
   const selectedDrawingIdRef = useRef(null);
@@ -1134,6 +1158,8 @@ const TradingChart = forwardRef(({
   useEffect(() => { rsiVisibleRef.current = rsiVisible; }, [rsiVisible]);
   useEffect(() => { stochConfigRef.current = stochConfig; }, [stochConfig]);
   useEffect(() => { stochVisibleRef.current = stochVisible; }, [stochVisible]);
+  useEffect(() => { bbPctConfigRef.current = bbPctConfig; }, [bbPctConfig]);
+  useEffect(() => { bbPctVisibleRef.current = bbPctVisible; }, [bbPctVisible]);
   useEffect(() => {
     crosshairModeRef.current = crosshairMode;
     crosshairVisibleRef.current = crosshairVisible;
@@ -1263,6 +1289,18 @@ const TradingChart = forwardRef(({
       scaleMargins: { top: 0.85, bottom: 0 },
     });
   }, [stochConfig, data, stochVisible]);
+
+  useEffect(() => {
+    const chart = chartRef.current;
+    if (!chart || !data || data.length === 0) return;
+    bbPctPaneRef.current?.forEach(ref => {
+      try { chart.removeSeries(ref); } catch { /* series already removed */ }
+    });
+    bbPctPaneRef.current = [];
+    if (!bbPctVisibleRef.current || !bbPctConfig || !bbPctConfig.period) return;
+    const pctSeries = addBBPctSeries(chart, data, bbPctConfig);
+    if (pctSeries) bbPctPaneRef.current = [pctSeries];
+  }, [bbPctConfig, data, bbPctVisible]);
 
   useEffect(() => {
     priceDecimalsRef.current = priceDecimals;
@@ -1770,6 +1808,13 @@ const TradingChart = forwardRef(({
     };
     if (rsiConfigRef.current) {
       createRSISeries(rsiConfigRef.current, chart);
+    }
+
+    // --- Bollinger %B (own pane) ---
+    const bbPctConfigInit = bbPctConfigRef.current;
+    if (bbPctVisibleRef.current && bbPctConfigInit?.period && dataRef.current?.length) {
+      const pctSeries = addBBPctSeries(chart, dataRef.current, bbPctConfigInit);
+      bbPctPaneRef.current = pctSeries ? [pctSeries] : [];
     }
 
     // --- Drawing helpers ---

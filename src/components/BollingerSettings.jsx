@@ -51,7 +51,21 @@ function calculateBollinger(data, period = 20, stdDev = 2) {
   return result;
 }
 
-export { calculateBollinger };
+// %B = (close − lower) / (upper − lower); points with flat bands (upper == lower) are skipped
+function calculateBollingerPercentB(data, period = 20, stdDev = 2) {
+  const bands = calculateBollinger(data, period, stdDev);
+  const result = [];
+  for (let k = 0; k < bands.middle.length; k++) {
+    const upper = bands.upper[k].value;
+    const lower = bands.lower[k].value;
+    const width = upper - lower;
+    if (width === 0) continue;
+    result.push({ time: bands.middle[k].time, value: (data[k + period - 1].close - lower) / width });
+  }
+  return result;
+}
+
+export { calculateBollinger, calculateBollingerPercentB };
 
 export default function BollingerSettings({ config, onChange, onClose }) {
   const [draft, setDraft] = useState(() => ({ ...config }));

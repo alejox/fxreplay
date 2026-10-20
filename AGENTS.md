@@ -46,6 +46,14 @@
 - Props: `rsiConfig={rsiConfig}` and `rsiVisible={rsiVisible}` passed to `TradingChart`
 - Button uses `TrendingDown` icon, click to toggle, double-click to configure
 
+## Bollinger %B
+- Component: `src/components/BollingerPercentBSettings.jsx` (math: `calculateBollingerPercentB` in `BollingerSettings.jsx`)
+- Config loaded/saved to localStorage (`fxreplay_bbpct_config`)
+- Default: period 20, stdDev 2, upper level 1, lower level 0
+- Props: `bbPctConfig={bbPctConfig}` and `bbPctVisible={bbPctVisible}` passed to `TradingChart`
+- Rendered in its own pane below the price chart (pane index 1)
+- Button uses `Percent` icon, click to toggle, double-click to configure
+
 ## Bollinger Bands
 - Component: `src/components/BollingerSettings.jsx`
 - Config loaded/saved to localStorage (`fxreplay_bb_config`)

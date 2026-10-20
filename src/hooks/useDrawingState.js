@@ -4,6 +4,7 @@ import { loadSessionsConfig } from '../components/SessionsSettings';
 import { loadMAConfig } from '../components/MovingAverageSettings';
 import { loadRSIConfig } from '../components/RSISettings';
 import { loadStochConfig } from '../components/StochasticSettings';
+import { loadBBPctConfig } from '../components/BollingerPercentBSettings';
 
 export function useDrawingState() {
   const [drawingMode, setDrawingMode] = useState(null);
@@ -24,6 +25,9 @@ export function useDrawingState() {
   const [stochConfig, setStochConfig] = useState(loadStochConfig);
   const [showStochSettings, setShowStochSettings] = useState(false);
   const [stochVisible, setStochVisible] = useState(!!loadStochConfig?.kPeriod);
+  const [bbPctConfig, setBBPctConfig] = useState(loadBBPctConfig);
+  const [showBBPctSettings, setShowBBPctSettings] = useState(false);
+  const [bbPctVisible, setBBPctVisible] = useState(false);
 
   return {
     drawingMode,
@@ -62,5 +66,11 @@ export function useDrawingState() {
     setShowStochSettings,
     stochVisible,
     setStochVisible,
+    bbPctConfig,
+    setBBPctConfig,
+    showBBPctSettings,
+    setShowBBPctSettings,
+    bbPctVisible,
+    setBBPctVisible,
   };
 }

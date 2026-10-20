@@ -5,7 +5,7 @@ import {
   Minus, MousePointer2, RectangleHorizontal,
   GitBranch, Undo2, Trash2, Loader2, Rewind, Spline,
   ArrowBigLeftDash, ArrowBigRightDash, AlertTriangle, Clock, Plus, Magnet, ArrowLeftRight,
-  TrendingUp, TrendingDown, Activity, Maximize2, Minimize2, Waves,
+  TrendingUp, TrendingDown, Activity, Maximize2, Minimize2, Waves, Percent,
 } from 'lucide-react';
 import TradingChart from '../components/TradingChart';
 import Sidebar from '../components/Sidebar';
@@ -19,6 +19,7 @@ import MovingAverageSettings from '../components/MovingAverageSettings';
 import BollingerSettings, { loadBBConfig } from '../components/BollingerSettings';
 import RSISettings from '../components/RSISettings';
 import StochasticSettings from '../components/StochasticSettings';
+import BollingerPercentBSettings from '../components/BollingerPercentBSettings';
 import { useBacktest } from '../hooks/useBacktest';
 import SettingsModal from '../components/SettingsModal';
 import DrawingStyleModal from '../components/DrawingStyleModal';
@@ -130,6 +131,12 @@ function Dashboard() {
     setShowStochSettings,
     stochVisible,
     setStochVisible,
+    bbPctConfig,
+    setBBPctConfig,
+    showBBPctSettings,
+    setShowBBPctSettings,
+    bbPctVisible,
+    setBBPctVisible,
   } = useDrawingState();
 
   const [bbConfig, setBBConfig] = useState(loadBBConfig);
@@ -848,6 +855,25 @@ function Dashboard() {
                     </div>
                   )}
                 </div>
+                <div style={{ position: 'relative' }}>
+                  <button
+                    onClick={(e) => { if (e.detail >= 2) return; setBBPctVisible(v => !v); }}
+                    onDoubleClick={() => setShowBBPctSettings(true)}
+                    className={`control-btn ${bbPctVisible ? 'active' : ''}`}
+                    title="Clic: %B de Bollinger (Mostrar/Ocultar) | Doble Clic: Configurar"
+                  >
+                    <Percent size={16} />
+                  </button>
+                  {showBBPctSettings && (
+                    <div style={{ position: 'absolute', left: '100%', top: 0, marginLeft: '8px', zIndex: 1000 }}>
+                      <BollingerPercentBSettings
+                        config={bbPctConfig}
+                        onChange={(cfg) => { setBBPctConfig(cfg); setBBPctVisible(!!cfg?.period); }}
+                        onClose={() => setShowBBPctSettings(false)}
+                      />
+                    </div>
+                  )}
+                </div>
                 <div className="controls-divider" />
                 <button
                   onClick={() => chartComponentRef.current?.removeLastDrawing()}
@@ -950,6 +976,8 @@ function Dashboard() {
                   rsiVisible={rsiVisible}
                   stochConfig={stochConfig}
                   stochVisible={stochVisible}
+                  bbPctConfig={bbPctConfig}
+                  bbPctVisible={bbPctVisible}
                   onDrawingComplete={() => setDrawingMode(null)}
                   onSelectionChange={handleSelectionChange}
                 />
